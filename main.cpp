@@ -8,7 +8,7 @@ using namespace std;
 
 const double G = 6.67 * pow(10, -11);
 const unsigned int N = 100;
-const float dt = 0.5;
+const float dt = 0.05;
 const unsigned int N_orbs = 1000;
 
 class Point {
@@ -42,14 +42,14 @@ vector<Vector> counter_interactions(vector<Point> points) {
 
 
     for (int i = 0; i < n; ++i) {
-        constant = G * points[i].m;
         temp_F.resize(n);
         for (int j = i + 1; j < n; ++j) {
-            temp_r.setX(points[i].x + points[i].r - (points[j].x + points[j].r));
-            temp_r.setY(points[i].y + points[i].r - (points[j].y + points[j].r));
+            constant = G * points[i].m;
+            temp_r.setX(-(points[i].x + points[i].r - (points[j].x + points[j].r)));
+            temp_r.setY(-(points[i].y + points[i].r - (points[j].y + points[j].r)));
             dist_r = sqrt(pow(temp_r.getX(), 2) + pow(temp_r.getY(), 2));
             constant /= pow(dist_r, 3);
-            temp_F[j] = points[j].m * constant * temp_r * -1;
+            temp_F[j] = points[j].m * constant * temp_r;
         }
         interactions[i] = temp_F;
         temp_F.clear();
@@ -78,7 +78,7 @@ vector<Vector> counter_interactions(vector<Point> points) {
 vector<Point> updater(vector<Point> points, vector<Vector> sum_F) {
     for (int i = 0; i < points.size(); ++i) {
         points[i].a = sum_F[i] / points[i].m;
-        points[i].v = points[i].v + points[i].a * dt; // вопрос по поводу времени
+        points[i].v = points[i].v + points[i].a * dt;
         points[i].x = points[i].x + points[i].v.getX() * dt;
         points[i].y = points[i].y + points[i].v.getY() * dt;
     }
